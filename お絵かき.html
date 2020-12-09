@@ -1,0 +1,71 @@
+<html>
+<title>お絵かき</title>
+<canvas id = "a" width = "600"height="600"Style = "background-color : aaa"></canvas>
+<br>
+<button id = "clear">消す</button>
+<button id = "r">赤にする</button>
+<button id = "b">青にする</button>
+<button id = "y">黄色にする</button>
+<style>
+    #btn{
+    position: absolute
+    top: 10px
+    left: 10px
+    width: 80px
+    height: 50px 
+    }
+</style>
+<script>
+    const canvas = document.getElementById("a")
+    const context = canvas.getContext("2d")
+    const button = document.getElementById("clear")
+    const r = document.getElementById("y")
+    const b = document.getElementById("b")
+    const y = document.getElementById("r")
+   
+    let mouse = {
+        x: 0, y: 0
+    }
+
+    canvas.addEventListener("mousemove",function(e){
+        mouse.x = e.pageX
+        mouse.y = e.pageY
+    })
+
+    canvas.addEventListener("mousedown",function(){
+        context.clearRect(0,0,canvas.width,canvas.height)
+        context.beginPath()
+        context.moveTo(mouse.x,mouse.y)
+        canvas.addEventListener("mousemove",onp)
+    })
+    
+    const onp = function (){
+        context.lineTo(mouse.x,mouse.y)
+        context.stroke()
+    }
+
+    canvas.addEventListener("mouseup",function(){
+        canvas.removeEventListener("mousemove",onp,false)
+    })
+    
+   clear.addEventListener("click",cle,false)
+
+    r.addEventListener("click",r,false)
+    b.addEventListener("click",b,false)
+    y.addEventListener("click",y,false)
+
+    function re(){
+        context.strokecolor = "f22"
+    }
+    function bl() {
+        context.strokecolor = "blue"
+    }
+    function ye(){
+        context.strokecolor = "yellow"
+    }
+
+    function cle () {
+         context.clearRect(0,0,context.canvas.width,context.canvas.height) 
+    }
+</script>
+</html>
