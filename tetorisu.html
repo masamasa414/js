@@ -1,0 +1,262 @@
+<html lang = "ja">
+	<title>暇</title>
+	<canvas id = "m" width = "300" height = "295" style = "background-color: #aaa"></canvas>
+	<script type = "text/javascript">
+			const canvas = document.getElementById("m");
+			const c = canvas.getContext("2d");
+			
+			
+			var random = Math.floor(Math.random()*3);
+			var map = [
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,0,0,0,0,0,0,1],
+				[1,1,1,1,1,1,1,1]
+			]
+
+			
+			var block = [
+				[
+					[0,1],
+					[0,1],
+				],
+				[
+					[0,1],
+					[1,1]
+				],
+				[
+					[1,1],
+					[1,1]
+				]
+			]
+			
+			var oldblock = []
+		
+			var keyx = 3; 
+			var keyy = 0;
+			
+			var brick = [
+				[0,0],
+				[0,0]
+			]
+			
+			var dyy = 0;
+			var dxx = 0;
+			var a = 0;
+			var bx = 1;
+			var by = 1;
+			
+			const kai = () => {
+				ne();
+				bx = 1;
+				by = 1;
+				block[random] = [[0,0],[0,0]];
+				for( dyy = 0 ; dyy < block.length - 1 ; dyy++ ){
+					for( dxx = 0 ; dxx < block.length - 1 ; dxx++ ){
+						var q = [dxx,1 - dyy,1 - dxx,dyy];
+						var p = [dyy,dxx,1 - dyy,1 - dxx];
+						if( oldblock[q[ a ]][p[ a ]] == 0 ){
+							continue;
+						}
+						block[random][dyy][dxx] = 1;
+					}
+				}
+			}
+			
+			const ne = () => {
+				for( var tas = 0 ; tas < 2 ; tas++ ){
+					oldblock[tas] = [];
+					for( var rta = 0 ; rta < 2 ; rta++ ){
+						if( block[random][tas][rta] == 1 ){
+							oldblock[tas][rta] = 1; 
+						}else if( block[random][tas][rta] == 0 ){
+							oldblock[tas][rta] = 0;
+						}
+					}
+				}
+				for( var tas = 0 ; tas < block.length ; tas++ ){
+					brick[tas] = [];
+					for( var rta = 0 ; rta < block.length ; rta++ ){
+						brick[tas][rta] = {x: 4,y: 0,stetus: 0};
+					}
+				}
+			}
+			
+			const kennti = () => {
+				for( var ta = 0 ; ta < block.length ; ta++ ){
+					for( var rt = 0 ; rt < block.length ; rt++ ){
+						if( brick[ta][rt].stetus == 1 ){
+							map[keyy + ta][keyx + rt] = 2;
+						}
+					}
+				}
+			}
+			
+			const gameover = () => {
+				alert("gameover");
+				alert("best scoer:"+scoer);
+				scoer = 0;
+				for( var kane = 0 ; kane < map.length ; kane++ ){
+					for( var ko = 0 ; ko < map.length ; ko++ ){
+						if( map[kane][ko] == 2 ){
+							map[kane][ko] = 0;
+						}
+					}
+				}
+			}
+			
+			var blockwidth = 25;
+			var blockheight = 25;
+			
+			var clear = 0;
+			var scoer = 0;
+				
+			const drawmap = () => {		
+				for( var i = 0 ; i < map.length ; i++ ){
+					clear = 0;
+					for( var n = 0 ; n < map.length ; n++ ){	
+						if( map[i][n] == 1 ){
+							c.fillStyle = "#222"
+							c.fillRect(n * 25,i * 25,25 - 2,25 - 2);
+						}else if( map[i][n] == 2 ){
+							clear++;
+							if( clear >= 6 ){
+								for( var ko = i ; ko < map.length ; ko++ ){
+									for( var st = 1 ; st < map.length ; st++ ){
+										map[ko][st] = 0;
+										if( st >= 6 ){
+											scoer+=100
+											map.splice(ko,1);
+											map.unshift([1,0,0,0,0,0,0,1]);
+											break;
+										}
+									}
+									break;
+								}
+							}
+							c.fillStyle = "#f22";
+							c.fillRect(n * 25,i * 25,25 - 2,25 - 2);
+						}
+					}
+				}
+			}
+			
+			const drawblock = () => {
+				for( var r = 0 ; r < 2 ; r++ ){
+					for( var j = 0 ; j < 2 ; j++ ){
+						brick[r][j].x = j * blockwidth + (keyx * 25);
+						brick[r][j].y = r * blockheight + (keyy * 25);
+						var brickx = brick[r][j].x;
+						var bricky = brick[r][j].y;
+						
+						if( block[random][r][j] == 1 ){
+							brick[r][j].stetus = 1;
+							c.fillStyle = "#f22";
+						    c.fillRect(brickx,bricky,blockwidth - 2,blockheight - 2);
+						}
+					}
+				}	
+			}
+			
+			const draw = () => {
+				ne();
+				drawmap();
+				drawblock();
+			}
+			
+			const loop = () => {
+				c.clearRect(0,0,canvas.width,canvas.hight)
+				c.font = "16px Arial";
+				c.fillText("score:"+scoer,220,50);
+				draw();
+			}
+			
+			const next = () => {
+				loop();
+				kennti();
+				keyy = 0;
+				keyx = 3;
+				random = Math.floor(Math.random()*3)
+			}
+			
+			window.addEventListener("keydown", e => {
+				switch(e.key){
+					case "ArrowRight":
+						keyx++;
+						for( i = 0 ; i < block.length ; i++ ){
+							for( n = 0 ; n < block.length ; n++ ){
+								if( brick[i][n].stetus == 1 ){
+									if( map[keyy + 2][keyx + 1] == 2 || map[keyy + 2][keyx + 1] == 1 ){
+										keyx--;
+									}
+								}
+							}
+						}
+						c.clearRect(0,0,canvas.width,canvas.height);
+						loop();
+					break;
+					case "ArrowLeft":
+						keyx--;
+						for( i = 0 ; i < block.length ; i++ ){ 	
+							for( n = 0 ; n < block.length ; n++ ){
+								if( brick[i][n].stetus == 1 ){
+									if( map[keyy + 2][keyx] == 2 || map[keyy + 2][keyx] == 1 ){
+										keyx++;
+									}
+								}
+							}
+						}
+						c.clearRect(0,0,canvas.width,canvas.height);
+						loop();
+						break;
+					case "s":
+						keyy++;
+						if( map[keyy + 2][keyx + 1] == 2 || map[keyy + 2][keyx + 1] == 1 ){
+							keyy--;
+						}
+						c.clearRect(0,0,canvas.width,canvas.height);
+						loop();
+						dxdy();
+						break;
+					case "ArrowUp":
+						a++;
+						if( a == 3 ){
+							a = 0;
+						}
+						kai();
+						break;
+				}
+			})
+			
+			const dxdy = () => {
+				c.clearRect(0,0,canvas.width,canvas.height);			
+				keyy++;
+				if( keyy == 10 - 1 ){
+					next();
+				}
+				if( map[keyy + 2][keyx + 1] == 2 || map[keyy + 2][keyx] == 2 ){	
+					if( brick[1][0].stetus == 1 || brick[1][1].stetus == 1 ){
+						next();
+					}
+					for( n = 0 ; n < map.length ; n++ ){
+						if( map[1][n] == 2 ){
+							gameover();
+						}
+					}
+				}
+				loop();
+			}
+			setInterval(dxdy,500);
+			
+			loop();
+	</script>
+</html>
+
